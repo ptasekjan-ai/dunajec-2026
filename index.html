@@ -9,6 +9,7 @@
   <meta property="og:description" content="Přehledný itinerář, rozpočet a rezervace pro vodu na Dunajci.">
   <meta property="og:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Rafting_on_the_Dunajec_River.jpg?width=1600">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2327695c'/%3E%3Cpath d='M9 39c9 5 17 5 25 0s15-5 21 0v8c-7-5-14-5-22 0s-16 5-24 0z' fill='%23f6f3ed'/%3E%3Cpath d='M16 27h32l-6 9H22z' fill='%23d69d3c'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -19,6 +20,7 @@
       <a href="#prehled">Přehled</a>
       <a href="#dny">Dny</a>
       <a href="#varianty">Varianty</a>
+      <a href="#mapa">Mapa</a>
       <a href="#rezervace">Rezervace</a>
     </nav>
     <div class="hero__content">
@@ -244,6 +246,64 @@
             <strong>cca 2 360-2 410 Kč/os.</strong>
           </div>
         </div>
+
+        <div id="mapa" class="map-section">
+          <div class="section-heading section-heading--split">
+            <div>
+              <p class="eyebrow">Mapa tras</p>
+              <h2>Trasy den po dni</h2>
+            </div>
+            <p class="section-note">Podklad je OpenStreetMap v Leafletu; odkazy Mapy.com otevírají outdoor mapu oblasti.</p>
+          </div>
+
+          <div class="map-shell">
+            <div class="map-toolbar" aria-label="Přepínače mapy">
+              <div class="map-toolbar__group" aria-label="Varianta mapy">
+                <button class="map-toggle is-active" type="button" data-map-variant="safe">Bezpečnější</button>
+                <button class="map-toggle" type="button" data-map-variant="sport">Sportovní</button>
+              </div>
+              <div class="map-toolbar__group" aria-label="Den trasy">
+                <button class="map-day is-active" type="button" data-map-day="all">Vše</button>
+                <button class="map-day" type="button" data-map-day="fri">Pá</button>
+                <button class="map-day" type="button" data-map-day="sat">So</button>
+                <button class="map-day" type="button" data-map-day="sun">Ne</button>
+              </div>
+            </div>
+
+            <div id="trip-map" class="trip-map" role="img" aria-label="Mapa denních tras po řece Dunajec"></div>
+
+            <div class="map-legend" aria-label="Legenda mapy">
+              <span><i class="legend-line legend-line--fri"></i>Pátek</span>
+              <span><i class="legend-line legend-line--sat"></i>Sobota</span>
+              <span><i class="legend-line legend-line--sun"></i>Neděle volitelně</span>
+              <span><i class="legend-dot"></i>Start / cíl / spaní</span>
+            </div>
+          </div>
+
+          <div class="map-detail" data-map-summary>
+            <article>
+              <span class="tag">Pá</span>
+              <h3>Pieninský průlom</h3>
+              <p>Niedzica/Sromowce -> Szczawnica, nebo sportovně Sromowce -> Krościenko. Nejhezčí část výletu.</p>
+            </article>
+            <article>
+              <span class="tag tag--warn">So</span>
+              <h3>Druhý vodní den</h3>
+              <p>Bezpečně Szczawnica -> Tylmanowa, sportovně Krościenko -> Łącko/Jazowsko jen po potvrzení půjčovny.</p>
+            </article>
+            <article>
+              <span class="tag">Ne</span>
+              <h3>Rezerva</h3>
+              <p>Tylmanowski průlom jen u bezpečnější varianty, jinak spíš pěší dopoledne a návrat.</p>
+            </article>
+          </div>
+
+          <div class="map-links">
+            <a href="https://mapy.com/fnc/v1/showmap?mapset=outdoor&center=20.4300,49.4550&zoom=12" target="_blank" rel="noreferrer">Mapy.com: Pieninský průlom</a>
+            <a href="https://mapy.com/fnc/v1/showmap?mapset=outdoor&center=20.4050,49.5100&zoom=12" target="_blank" rel="noreferrer">Mapy.com: Tylmanowa</a>
+            <a href="https://mapy.com/fnc/v1/showmap?mapset=outdoor&center=20.4660,49.5400&zoom=11" target="_blank" rel="noreferrer">Mapy.com: Łącko / Jazowsko</a>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -300,12 +360,15 @@ Dziękuję i pozdrawiam</pre>
           <a href="https://camping.sromowce.pl/" target="_blank" rel="noreferrer">Kemp Sromowce</a>
           <a href="https://wietrznice.eu/cennik/" target="_blank" rel="noreferrer">Wietrznice ceník</a>
           <a href="https://www.adventure-sky.pl/ceny.html" target="_blank" rel="noreferrer">Adventure Sky ceny</a>
+          <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap mapa</a>
+          <a href="https://developer.mapy.com/further-uses-of-mapycz/mapy-cz-url/" target="_blank" rel="noreferrer">Mapy.com URL</a>
         </div>
-        <p class="source-note">Fotografie v úvodu: Wikimedia Commons, Jerzy Opioła, Rafting on the Dunajec River.</p>
+        <p class="source-note">Fotografie v úvodu: Wikimedia Commons, Jerzy Opioła, Rafting on the Dunajec River. Mapové linie jsou orientační zákres vodních úseků podle ověřených startů/cílů a délek půjčoven.</p>
       </div>
     </section>
   </main>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
