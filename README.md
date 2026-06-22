@@ -9,7 +9,7 @@ Staticky web pro facebookovou udalost tridni vody na Dunajci.
 - `script.js` - prepinani dni, variant a kopirovani textu rezervace
 - `itinerar-dunajec-2026-overeno.md` - overeny obsahovy podklad a zdroje
 
-Mapa v `index.html` pouziva Leaflet a OpenStreetMap dlazdice. Mapy.com jsou doplnene jako odkazy na outdoor mapu oblasti, protoze verejne URL Mapy.com nepodporuje vodni typ trasy; pro vlozenou Mapy.com mapu by bylo potreba sdilet rucne ulozenou trasu nebo pouzit REST API s klicem.
+Mapa v `index.html` pouziva Leaflet a OpenStreetMap dlazdice. Mapy.com jsou doplnene jako odkazy na outdoor mapu oblasti. Pres verejne URL Mapy.com nejde pro tenhle usek korektne vytvorit lodni trasu, proto web generuje GPX ke stazeni pro aktualne vybranou variantu/den.
 
 ## Publikace
 

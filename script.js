@@ -194,6 +194,7 @@ let tripMap;
 let routeLayer;
 let activeMapVariant = 'safe';
 let activeMapDay = 'all';
+let currentGpxUrl;
 
 function setMapVariant(variant) {
   if (!tripRoutes[variant]) return;
@@ -265,6 +266,7 @@ function renderTripMap() {
   });
 
   updateMapSummary(visibleRoutes);
+  updateMapLinks(visibleRoutes, bounds);
 
   if (bounds.length) {
     tripMap.fitBounds(bounds, { padding: [34, 34], maxZoom: activeMapDay === 'all' ? 12 : 13 });
@@ -282,6 +284,72 @@ function updateMapSummary(visibleRoutes) {
       <p>${route.meta}</p>
     </article>
   `).join('');
+}
+
+function xmlEscape(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&apos;');
+}
+
+function routeCoordsForGpx(route) {
+  return route.coords;
+}
+
+function makeGpx(visibleRoutes) {
+  const tracks = visibleRoutes.map(([, route]) => {
+    const coords = routeCoordsForGpx(route);
+    if (!coords.length) return '';
+
+    const points = coords.map(([lat, lon]) => `      <trkpt lat="${lat}" lon="${lon}"></trkpt>`).join('\n');
+    return `  <trk>
+    <name>${xmlEscape(route.day)} - ${xmlEscape(route.title)}</name>
+    <desc>${xmlEscape(route.meta)}</desc>
+    <trkseg>
+${points}
+    </trkseg>
+  </trk>`;
+  }).filter(Boolean).join('\n');
+
+  const waypoints = visibleRoutes.flatMap(([, route]) => {
+    if (route.coords.length) return [];
+    return route.markers.map(([name, [lat, lon]]) => `  <wpt lat="${lat}" lon="${lon}">
+    <name>${xmlEscape(name)}</name>
+    <desc>${xmlEscape(route.day)} - bez pevné vodní trasy</desc>
+  </wpt>`);
+  }).join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Dunajec 2026 web" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>Dunajec 2026 - ${activeMapVariant === 'safe' ? 'bezpečnější' : 'sportovní'} varianta</name>
+  </metadata>
+${tracks}
+${waypoints}
+</gpx>
+`;
+}
+
+function updateMapLinks(visibleRoutes, bounds) {
+  const gpxLink = document.querySelector('#map-gpx-link');
+  const mapyLink = document.querySelector('#mapy-area-link');
+  if (!gpxLink || !mapyLink) return;
+
+  if (currentGpxUrl) URL.revokeObjectURL(currentGpxUrl);
+  currentGpxUrl = URL.createObjectURL(new Blob([makeGpx(visibleRoutes)], { type: 'application/gpx+xml' }));
+
+  const dayName = activeMapDay === 'all' ? 'vse' : activeMapDay;
+  gpxLink.href = currentGpxUrl;
+  gpxLink.download = `dunajec-${activeMapVariant}-${dayName}.gpx`;
+
+  const centerSource = bounds.length ? bounds : visibleRoutes.flatMap(([, route]) => route.markers.map(([, coord]) => coord));
+  const center = centerSource.reduce((acc, [lat, lon]) => [acc[0] + lat, acc[1] + lon], [0, 0]).map((value) => value / centerSource.length);
+  const zoom = activeMapDay === 'all' ? 12 : 13;
+  mapyLink.href = `https://mapy.com/fnc/v1/showmap?mapset=outdoor&center=${center[1].toFixed(6)},${center[0].toFixed(6)}&zoom=${zoom}`;
+  mapyLink.textContent = activeMapDay === 'all' ? 'Otevřít oblast v Mapy.com' : 'Otevřít oblast dne v Mapy.com';
 }
 
 function initTripMap() {
